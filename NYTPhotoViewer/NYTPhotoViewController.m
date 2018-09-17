@@ -132,8 +132,6 @@ NSString * const NYTPhotoViewControllerPhotoImageUpdatedNotification = @"NYTPhot
     BOOL conforms = [photo conformsToProtocol:@protocol(NYTPhoto)];
     BOOL isEqual = [photo isEqual:self.photo];
 
-    NSLog(@"photoImageUpdatedWithNotification conform: %i isEqual: %i",conforms, isEqual);
-
     if (conforms && isEqual) {
         [self updateImage:photo.image imageData:photo.imageData];
     }
