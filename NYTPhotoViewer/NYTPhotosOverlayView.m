@@ -106,12 +106,12 @@
     [self addSubview:self.captionView];
 
     if ([self respondsToSelector:@selector(safeAreaLayoutGuide)] && self.captionViewRespectsSafeArea) {
-        NSLayoutConstraint *bottomConstraint = [self.captionView.bottomAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor];
+        NSLayoutConstraint *bottomConstraint = [self.captionView.bottomAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor constant:self.additionalCaptionViewInsets.bottom];
         NSLayoutConstraint *leftConstraint = [self.captionView.leftAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.leftAnchor];
         NSLayoutConstraint *rightConstraint = [self.captionView.rightAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.rightAnchor];
         [self addConstraints:@[bottomConstraint, leftConstraint, rightConstraint]];
     } else {
-        NSLayoutConstraint *bottomConstraint = [NSLayoutConstraint constraintWithItem:self.captionView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0.0];
+        NSLayoutConstraint *bottomConstraint = [NSLayoutConstraint constraintWithItem:self.captionView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:self.additionalCaptionViewInsets.bottom];
         NSLayoutConstraint *widthConstraint = [NSLayoutConstraint constraintWithItem:self.captionView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0.0];
         NSLayoutConstraint *horizontalPositionConstraint = [NSLayoutConstraint constraintWithItem:self.captionView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0.0];
         [self addConstraints:@[bottomConstraint, widthConstraint, horizontalPositionConstraint]];

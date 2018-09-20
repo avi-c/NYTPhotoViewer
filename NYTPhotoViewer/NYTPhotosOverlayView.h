@@ -60,6 +60,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic) BOOL captionViewRespectsSafeArea;
 
+@property (nonatomic) UIEdgeInsets additionalCaptionViewInsets;
+
 @end
 
 NS_ASSUME_NONNULL_END
