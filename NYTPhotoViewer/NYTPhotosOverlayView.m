@@ -58,6 +58,7 @@
     [super layoutSubviews];
 
     CGSize contentSize = self.captionView.intrinsicContentSize;
+    contentSize.height += self.additionalCaptionViewInsets.bottom;
     if (@available(iOS 11.0, *)) {
         self.captionView.frame = CGRectMake(0, self.bounds.size.height - contentSize.height - self.safeAreaInsets.bottom, self.bounds.size.width, contentSize.height + self.safeAreaInsets.bottom);
     } else {
