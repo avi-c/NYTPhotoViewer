@@ -683,6 +683,7 @@
 					};
 					11FBDADB1C877BD600018169 = {
 						CreatedOnToolsVersion = 7.2.1;
+						DevelopmentTeam = JVL9YPNS8B;
 						LastSwiftMigration = 0810;
 					};
 				};
@@ -1076,7 +1077,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
-					"ANIMATED_GIF_SUPPORT=1",
+					"ANIMATED_GIF_SUPPORT=0",
 				);
 				INFOPLIST_FILE = NYTPhotoViewer/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -1189,6 +1190,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = JVL9YPNS8B;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Checkouts/FLAnimatedImage/build/Debug-iphoneos",
@@ -1206,6 +1208,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = JVL9YPNS8B;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Checkouts/FLAnimatedImage/build/Debug-iphoneos",

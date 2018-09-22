@@ -48,25 +48,9 @@ static const CGFloat NYTPhotoCaptionViewVerticalMargin = 7.0;
     return YES;
 }
 
-- (void)didMoveToSuperview {
-    [super didMoveToSuperview];
-
-    NSLayoutConstraint *maxHeightConstraint = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationLessThanOrEqual toItem:self.superview attribute:NSLayoutAttributeHeight multiplier:0.3f constant:0.0f];
-    [self.superview addConstraint:maxHeightConstraint];
-}
-
 - (void)layoutSubviews {
     [super layoutSubviews];
-
-    void (^updateGradientFrame)() = ^{
-        self.gradientLayer.frame = self.layer.bounds;
-    };
-
-    updateGradientFrame();
-
-    // On iOS 8.x, when this view is height-constrained, neither `self.bounds` nor `self.layer.bounds` reflects the new layout height immediately after `[super layoutSubviews]`. Both of those properties appear correct in the next runloop.
-    // This problem doesn't affect iOS 9 and there may be a better solution; PRs welcome.
-    dispatch_async(dispatch_get_main_queue(), updateGradientFrame);
+    self.gradientLayer.frame = self.layer.bounds;
 }
 
 - (CGSize)intrinsicContentSize {
@@ -75,15 +59,6 @@ static const CGFloat NYTPhotoCaptionViewVerticalMargin = 7.0;
     CGFloat height = (CGFloat)ceil(contentSize.height);
 
     return CGSizeMake(width, height);
-}
-
-- (void)setPreferredMaxLayoutWidth:(CGFloat)preferredMaxLayoutWidth {
-    preferredMaxLayoutWidth = (CGFloat)ceil(preferredMaxLayoutWidth);
-
-    if (ABS(_preferredMaxLayoutWidth - preferredMaxLayoutWidth) > 0.1) {
-        _preferredMaxLayoutWidth = preferredMaxLayoutWidth;
-        [self invalidateIntrinsicContentSize];
-    }
 }
 
 #pragma mark - NYTPhotoCaptionView
@@ -104,7 +79,7 @@ static const CGFloat NYTPhotoCaptionViewVerticalMargin = 7.0;
 
 - (void)commonInit {
     self.translatesAutoresizingMaskIntoConstraints = NO;
-
+    self.backgroundColor = [UIColor clearColor];
     [self setupTextView];
     [self updateTextViewAttributedText];
     [self setupGradient];
@@ -119,13 +94,6 @@ static const CGFloat NYTPhotoCaptionViewVerticalMargin = 7.0;
     self.textView.textContainerInset = UIEdgeInsetsMake(NYTPhotoCaptionViewVerticalMargin, NYTPhotoCaptionViewHorizontalMargin, NYTPhotoCaptionViewVerticalMargin, NYTPhotoCaptionViewHorizontalMargin);
 
     [self addSubview:self.textView];
-    
-    NSLayoutConstraint *topConstraint = [NSLayoutConstraint constraintWithItem:self.textView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:0.0];
-    NSLayoutConstraint *bottomConstraint = [NSLayoutConstraint constraintWithItem:self.textView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0.0];
-    NSLayoutConstraint *widthConstraint = [NSLayoutConstraint constraintWithItem:self.textView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0.0];
-    NSLayoutConstraint *horizontalPositionConstraint = [NSLayoutConstraint constraintWithItem:self.textView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0.0];
-    
-    [self addConstraints:@[topConstraint, bottomConstraint, widthConstraint, horizontalPositionConstraint]];
 }
 
 - (void)setupGradient {
@@ -159,6 +127,9 @@ static const CGFloat NYTPhotoCaptionViewVerticalMargin = 7.0;
     }
     
     self.textView.attributedText = attributedLabelText;
+
+    [self.textView sizeToFit];
 }
 
 @end
+

@@ -116,6 +116,12 @@ static const UIEdgeInsets NYTPhotosViewControllerCloseButtonImageInsets = {3, 0,
     [self addChildViewController:self.pageViewController];
     [self.view addSubview:self.pageViewController.view];
     [self.pageViewController didMoveToParentViewController:self];
+
+    self.pageViewController.view.translatesAutoresizingMaskIntoConstraints = false;
+    [self.pageViewController.view.topAnchor constraintEqualToAnchor:self.view.topAnchor].active = TRUE;
+    [self.pageViewController.view.leftAnchor constraintEqualToAnchor:self.view.leftAnchor].active = TRUE;
+    [self.pageViewController.view.rightAnchor constraintEqualToAnchor:self.view.rightAnchor].active = TRUE;
+    [self.pageViewController.view.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor].active = TRUE;
     
     [self addOverlayView];
     
@@ -270,7 +276,7 @@ static const UIEdgeInsets NYTPhotosViewControllerCloseButtonImageInsets = {3, 0,
         captionViewRespectsSafeArea = [self.delegate photosViewController:self captionViewRespectsSafeAreaForPhoto:self.currentlyDisplayedPhoto];
     }
 
-    self.overlayView.captionViewRespectsSafeArea = captionViewRespectsSafeArea;
+    self.overlayView.captionViewRespectsSafeArea = NO;//captionViewRespectsSafeArea;
     self.overlayView.captionView = captionView;
 }
 
@@ -596,6 +602,13 @@ static const UIEdgeInsets NYTPhotosViewControllerCloseButtonImageInsets = {3, 0,
         UIViewController <NYTPhotoContainer> *photoViewController = pageViewController.viewControllers.firstObject;
         [self didNavigateToPhoto:photoViewController.photo];
     }
+}
+
+- (void) viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    NSLog(@"size: %@", NSStringFromCGSize(size));
+    CGRect frame = self.overlayView.frame;
+    frame.size.width = size.width;
+    self.overlayView.frame = frame;
 }
 
 @end
