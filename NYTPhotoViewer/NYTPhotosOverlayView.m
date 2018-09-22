@@ -108,6 +108,7 @@
     
     self.captionView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:self.captionView];
+    [self sendSubviewToBack:self.captionView];
 }
 
 - (UIBarButtonItem *)leftBarButtonItem {
