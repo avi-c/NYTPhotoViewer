@@ -59,7 +59,7 @@
         self.gradientLayer.frame = self.layer.bounds;
     };
 
-    self.label.preferredMaxLayoutWidth = self.bounds.size.width;
+    self.label.preferredMaxLayoutWidth = self.bounds.size.width - self.safeAreaInsets.right - self.safeAreaInsets.left;
 
     updateGradientFrame();
 
@@ -117,9 +117,9 @@
     [self addSubview:self.label];
 
     self.label.translatesAutoresizingMaskIntoConstraints = NO;
-    [[self.label.leadingAnchor constraintEqualToAnchor:self.leadingAnchor] setActive:YES];
-    [[self.label.trailingAnchor constraintEqualToAnchor:self.trailingAnchor] setActive:YES];
-    [[self.label.bottomAnchor constraintEqualToAnchor:self.bottomAnchor] setActive:YES];
+    [[self.label.leadingAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.leadingAnchor] setActive:YES];
+    [[self.label.trailingAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor] setActive:YES];
+    [[self.label.bottomAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor] setActive:YES];
 }
 
 - (void)setupGradient {
