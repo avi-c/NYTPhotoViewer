@@ -8,9 +8,6 @@
 
 #import "NYTPhotoCaptionView.h"
 
-static const CGFloat NYTPhotoCaptionViewHorizontalMargin = 8.0;
-static const CGFloat NYTPhotoCaptionViewVerticalMargin = 7.0;
-
 @interface NYTPhotoCaptionView ()
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder NS_DESIGNATED_INITIALIZER;
@@ -19,7 +16,7 @@ static const CGFloat NYTPhotoCaptionViewVerticalMargin = 7.0;
 @property (nonatomic, readonly) NSAttributedString *attributedSummary;
 @property (nonatomic, readonly) NSAttributedString *attributedCredit;
 
-@property (nonatomic) UITextView *textView;
+@property (nonatomic) UILabel *label;
 @property (nonatomic) CAGradientLayer *gradientLayer;
 
 @end
@@ -48,17 +45,44 @@ static const CGFloat NYTPhotoCaptionViewVerticalMargin = 7.0;
     return YES;
 }
 
+- (void)didMoveToSuperview {
+    [super didMoveToSuperview];
+
+    NSLayoutConstraint *maxHeightConstraint = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationLessThanOrEqual toItem:self.superview attribute:NSLayoutAttributeHeight multiplier:0.3f constant:0.0f];
+    [self.superview addConstraint:maxHeightConstraint];
+}
+
 - (void)layoutSubviews {
     [super layoutSubviews];
-    self.gradientLayer.frame = self.layer.bounds;
+
+    void (^updateGradientFrame)() = ^{
+        self.gradientLayer.frame = self.layer.bounds;
+    };
+
+    self.label.preferredMaxLayoutWidth = self.bounds.size.width;
+
+    updateGradientFrame();
+
+    // On iOS 8.x, when this view is height-constrained, neither `self.bounds` nor `self.layer.bounds` reflects the new layout height immediately after `[super layoutSubviews]`. Both of those properties appear correct in the next runloop.
+    // This problem doesn't affect iOS 9 and there may be a better solution; PRs welcome.
+    dispatch_async(dispatch_get_main_queue(), updateGradientFrame);
 }
 
 - (CGSize)intrinsicContentSize {
-    CGSize contentSize = [self.textView sizeThatFits:CGSizeMake(self.preferredMaxLayoutWidth, CGFLOAT_MAX)];
+    CGSize contentSize = [self.label sizeThatFits:CGSizeMake(self.preferredMaxLayoutWidth, CGFLOAT_MAX)];
     CGFloat width = (CGFloat)self.preferredMaxLayoutWidth;
     CGFloat height = (CGFloat)ceil(contentSize.height);
 
     return CGSizeMake(width, height);
+}
+
+- (void)setPreferredMaxLayoutWidth:(CGFloat)preferredMaxLayoutWidth {
+    preferredMaxLayoutWidth = (CGFloat)ceil(preferredMaxLayoutWidth);
+
+    if (ABS(_preferredMaxLayoutWidth - preferredMaxLayoutWidth) > 0.1) {
+        _preferredMaxLayoutWidth = preferredMaxLayoutWidth;
+        [self invalidateIntrinsicContentSize];
+    }
 }
 
 #pragma mark - NYTPhotoCaptionView
@@ -80,20 +104,22 @@ static const CGFloat NYTPhotoCaptionViewVerticalMargin = 7.0;
 - (void)commonInit {
     self.translatesAutoresizingMaskIntoConstraints = NO;
     self.backgroundColor = [UIColor clearColor];
-    [self setupTextView];
-    [self updateTextViewAttributedText];
+    [self setupText];
+    [self updateAttributedText];
     [self setupGradient];
 }
 
-- (void)setupTextView {
-    self.textView = [[UITextView alloc] initWithFrame:CGRectZero textContainer:nil];
-    self.textView.translatesAutoresizingMaskIntoConstraints = NO;
-    self.textView.editable = NO;
-    self.textView.dataDetectorTypes = UIDataDetectorTypeNone;
-    self.textView.backgroundColor = [UIColor clearColor];
-    self.textView.textContainerInset = UIEdgeInsetsMake(NYTPhotoCaptionViewVerticalMargin, NYTPhotoCaptionViewHorizontalMargin, NYTPhotoCaptionViewVerticalMargin, NYTPhotoCaptionViewHorizontalMargin);
+- (void)setupText {
+    self.label = [[UILabel alloc] initWithFrame:CGRectZero];
+    self.label.numberOfLines = 0;
+    self.label.adjustsFontSizeToFitWidth = YES;
+    self.label.lineBreakMode = NSLineBreakByWordWrapping;
+    [self addSubview:self.label];
 
-    [self addSubview:self.textView];
+    self.label.translatesAutoresizingMaskIntoConstraints = NO;
+    [[self.label.leadingAnchor constraintEqualToAnchor:self.leadingAnchor] setActive:YES];
+    [[self.label.trailingAnchor constraintEqualToAnchor:self.trailingAnchor] setActive:YES];
+    [[self.label.bottomAnchor constraintEqualToAnchor:self.bottomAnchor] setActive:YES];
 }
 
 - (void)setupGradient {
@@ -103,7 +129,7 @@ static const CGFloat NYTPhotoCaptionViewVerticalMargin = 7.0;
     [self.layer insertSublayer:self.gradientLayer atIndex:0];
 }
 
-- (void)updateTextViewAttributedText {
+- (void)updateAttributedText {
     NSMutableAttributedString *attributedLabelText = [[NSMutableAttributedString alloc] init];
     
     if (self.attributedTitle) {
@@ -126,10 +152,7 @@ static const CGFloat NYTPhotoCaptionViewVerticalMargin = 7.0;
         [attributedLabelText appendAttributedString:self.attributedCredit];
     }
     
-    self.textView.attributedText = attributedLabelText;
-
-    [self.textView sizeToFit];
+    self.label.attributedText = attributedLabelText;
 }
 
 @end
-
